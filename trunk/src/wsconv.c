@@ -252,7 +252,8 @@ do{\
 #define HEX_CHK_AF(x) ((x)>='A' && (x)<='F')
 #define HEX_CHK(x) ((HEX_CHK_09(x)) || (HEX_CHK_af(x)) || (HEX_CHK_AF(x)))
 
-#define HEX2BIN(hex, bin)\
+#if 0
+#define HEX2BIN2(hex, bin)\
 do{\
 	(bin)[0]=0x0;\
 	if(HEX_CHK_09((hex)[1]))\
@@ -268,6 +269,15 @@ do{\
 	else if(HEX_CHK_AF((hex)[0]))\
 		(bin)[0]|=(((hex)[0]-'A'+0xa)<<4);\
 }while(0)
+#else
+#define HEX2BIN1(hex)\
+	( (hex)<'A' ? (hex)-'0' : \
+	(hex)<'a' ? (hex)-'A'+0xa : (hex)-'a'+0xa )
+
+#define HEX2BIN2(hex, bin)\
+	( (bin)[0]=0x0, (bin)[0]|=HEX2BIN1((hex)[1]), (bin)[0]|=(HEX2BIN1((hex)[0])<<4) )
+
+#endif
 
 #define PCAP_GEN_PKT_TS(ts_sec, ts_usec) \
 do{\
@@ -604,7 +614,7 @@ static int conv_do(dataroot_t * pdataroot, conv_stat_t * pconv_stat)
 		}
 
 		//convert hex to bin
-		HEX2BIN(&pconv_stat->rd_buf_ust[uind], &(pdataroot->pio_mgr->wr_buf[pconv_stat->wr_buf_ulen]));
+		HEX2BIN2(&pconv_stat->rd_buf_ust[uind], &(pdataroot->pio_mgr->wr_buf[pconv_stat->wr_buf_ulen]));
 		pconv_stat->wr_buf_ulen+=1;
 		uind+=2;
 	}
