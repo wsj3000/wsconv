@@ -1,0 +1,5 @@
+This software is a converter of wireshark's pcap format.
+
+Try 'wsconv -h' for help.
+
+
